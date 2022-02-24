@@ -16,7 +16,7 @@ const margin = {left:50, right:50, bottom:50, top:50};
 const yTooltipOffset = 15; 
 
 
-// TODO: Add svg1 within #hard-coded-bar div and adding dimensions and formatting
+// Add svg1 within #hard-coded-bar div and adding dimensions and formatting
 const svg1 = d3
   .select("#hard-coded-bar")
   .append("svg")
