@@ -147,9 +147,177 @@ svg1.selectAll(".bar")
      .on("mousemove", mousemove1)
      .on("mouseleave", mouseleave1);
 
+let svg2 = d3.select("#csv-bar")
+     .append("svg")
+        .attr("width", width-margin.left-margin.right)
+        .attr("height", height - margin.top - margin.bottom)
+        .attr("viewBox", [0, 0, width, height]);
+     
+   
+   // Hardcoded barchart data
+d3.csv("data/barchart.csv").then((data) => {
+
+  console.log(data); 
+
+  let maxY2 = d3.max(data, function(d) { return d.score; });
+
+  // line 1: scales the y-axis (or the scores), setting data values to pixel values, 
+  // line 2: domain sets the input values from data values, 
+  // line 3: range sets the output values to pixel values
+  let yScale2 = d3.scaleLinear()
+              .domain([0,maxY2])
+              .range([height-margin.bottom,margin.top]); 
+
+  // line 1: scales the x-axis (or the letter grades), setting data values to pixel values,
+  // line 2: domain sets the input values from data values, 
+  // line 3: range sets the output values to pixel values, 
+  // line 4: padding adds a blank space between bars so they don't overlap
+  let xScale2 = d3.scaleBand()
+              .domain(d3.range(data.length))
+              .range([margin.left, width - margin.right])
+              .padding(0.1); 
+
+  // line 1: adds a generic svg to be able to add y-axis 
+  // line 2: defines the placement of y-axis in svg1 on y-axis
+  // line 3: calls the yScale1 to be applied to the y-axis in the svg1
+  // line 4: defines the font size of the y-axis
+  svg2.append("g")
+    .attr("transform", `translate(${margin.left}, 0)`) 
+    .call(d3.axisLeft(yScale2)) 
+    .attr("font-size", '20px'); 
+
+  // line 1: adds a generic svg to be able to add x-axis 
+  // line 2: defines the placement of x-axis in svg1 on x-axis
+  // line 3: calls the xScale1 to be applied to the x-axis in the svg1 
+  //       and defines the ticks on the x-axis 
+  //  line 4: defines the font size of the x-axis
+  svg2.append("g")
+      .attr("transform", `translate(0,${height - margin.bottom})`) 
+      .call(d3.axisBottom(xScale2) 
+              .tickFormat(i => data[i].name))  
+      .attr("font-size", '20px'); 
+
+  /* 
+
+    Tooltip Set-up  
+
+  */
+
+  // line 1: selects the id #hard-coded-bar
+  // line 2: appends the div 
+  // line 3: style() sets the opacity of the tooltip to 0
+  // line 4: attr() sets the attribute "class" to tooltip
+  const tooltip2 = d3.select("#csv-bar") 
+                  .append("div") 
+                  .attr('id', "tooltip2") 
+                  .style("opacity", 0) 
+                  .attr("class", "tooltip"); 
+
+  // line 1: defines the function mouseover1 with its parameters
+  // line 2: sets what text should be included in the tooltip 
+  // line 3: third line sets the opacity of the tooltip to 1, so tooltip can be seen once moused over
+  const mouseover2 = function(event, d) {
+    tooltip2.html("Name: " + d.name + "<br> Score: " + d.score + "<br>") 
+            .style("opacity", 1);  
+  }
+
+  // line 1: defines the function mousemove1 with its parameters
+  // line 2: sets the tooltip position to the left based on values 
+  // line 3: sets the tooltip position to the top based on values and offset
+  const mousemove2 = function(event, d) {
+    tooltip2.style("left", (event.x)+"px") 
+            .style("top", (event.y + yTooltipOffset) +"px"); 
+  }
+
+  // line 1: defines the function mouseleave1 with its parameters
+  // line 2: sets opacity to 0 when mouse leaves visual 
+  const mouseleave2 = function(event, d) { 
+    tooltip2.style("opacity", 0); };
+
+  svg2.selectAll(".bar") 
+    .data(data) 
+    .enter()  
+    .append("rect") 
+      .attr("class", "bar") 
+      .attr("x", (d,i) => xScale2(i)) 
+      .attr("y", (d) => yScale2(d.score)) 
+      .attr("height", (d) => (height - margin.bottom) - yScale2(d.score)) 
+      .attr("width", xScale2.bandwidth()) 
+      .on("mouseover", mouseover2) 
+      .on("mousemove", mousemove2)
+      .on("mouseleave", mouseleave2);
+});
+
+// add an svg
+let svg3 = d3.select("#csv-scatter")
+            .append("svg")
+                .attr("class", "holder");
+
+d3.csv("data/scatter.csv").then((data) => {
+
+    console.log(data); 
+    let maxY3 = d3.max(data, function(d) { return d.score; });
+
+    // line 1: scales the y-axis (or the scores), setting data values to pixel values, 
+    // line 2: domain sets the input values from data values, 
+    // line 3: range sets the output values to pixel values
+    let yScale3 = d3.scaleLinear()
+                .domain([0,maxY3])
+                .range([height-margin.bottom,margin.top]); 
+
+    // line 1: scales the x-axis (or the letter grades), setting data values to pixel values,
+    // line 2: domain sets the input values from data values, 
+    // line 3: range sets the output values to pixel values, 
+    // line 4: padding adds a blank space between bars so they don't overlap
+    let xScale3 = d3.scaleBand()
+                .domain(d3.range(data.length))
+                .range([margin.left, width - margin.right])
+                .padding(0.1); 
+
+    
+    const tooltip3 = d3.select("#csv-scatter") 
+        .append("div") 
+        .attr('id', "tooltip3") 
+        .style("opacity", 0) 
+        .attr("class", "tooltip"); 
+
+    // line 1: defines the function mouseover1 with its parameters
+    // line 2: sets what text should be included in the tooltip 
+    // line 3: third line sets the opacity of the tooltip to 1, so tooltip can be seen once moused over
+    const mouseover3 = function(event, d) {
+    tooltip3.html("Name: " + d.name + "<br> Score: " + d.score + "<br>") 
+      .style("opacity", 1);  
+    }
+
+    // line 1: defines the function mousemove1 with its parameters
+    // line 2: sets the tooltip position to the left based on values 
+    // line 3: sets the tooltip position to the top based on values and offset
+    const mousemove3 = function(event, d) {
+    tooltip3.style("left", (event.pagex)+"px") 
+      .style("top", (event.pagey + yTooltipOffset) +"px"); 
+    }
+
+    // line 1: defines the function mouseleave1 with its parameters
+    // line 2: sets opacity to 0 when mouse leaves visual 
+    const mouseleave3 = function(event, d) { 
+    tooltip3.style("opacity", 0); };
+
+    svg3.selectAll("circle")
+    .data(data)
+    .enter()
+    .append("circle")
+        .attr("cx", (d) => { return d.day; })
+        .attr("cy", (d) => { return d.score; })
+        .attr("r", 10) 
+        .attr("width", xScale3.bandwidth()) 
+        .on("mouseover", mouseover3) 
+        .on("mousemove", mousemove3)
+        .on("mouseleave", mouseleave3);
 
 
+});
 
+    
 
 
 
